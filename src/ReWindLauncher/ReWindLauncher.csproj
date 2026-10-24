@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <RootNamespace>ReWindLauncher</RootNamespace>
+    <AssemblyName>ReWindLauncher</AssemblyName>
+    <ApplicationIcon>Resources\launcher.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" GeneratePathProperty="true">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\bg_default.jpg" />
+    <EmbeddedResource Include="Resources\cloud.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Resources\bg1.jpg" Link="bgskin\bg1.jpg" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <UsingTask TaskName="DeflateFile" TaskFactory="RoslynCodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <InputFile ParameterType="System.String" Required="true" />
+      <OutputFile ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        using (var input = File.OpenRead(InputFile))
+        using (var output = File.Create(OutputFile))
+        using (var deflate = new DeflateStream(output, CompressionMode.Compress))
+            input.CopyTo(deflate);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="CompressEmbeddedJson" BeforeTargets="SplitResourcesByCulture">
+    <DeflateFile InputFile="$(PkgNewtonsoft_Json)\lib\net45\Newtonsoft.Json.dll"
+                 OutputFile="$(IntermediateOutputPath)Newtonsoft.Json.deflate" />
+    <ItemGroup>
+      <EmbeddedResource Include="$(IntermediateOutputPath)Newtonsoft.Json.deflate"
+                        LogicalName="Newtonsoft.Json.deflate" />
+    </ItemGroup>
+  </Target>
+
+</Project>

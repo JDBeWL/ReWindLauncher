@@ -1,0 +1,35 @@
+# ---------- .NET / Visual Studio ----------
+bin/
+obj/
+.vs/
+packages/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.pdb
+
+# ---------- 启动器运行时产物 ----------
+**/.minecraft/
+logs/
+mctemp/
+rewindlauncher.cfg
+auth.dat
+*.log
+hs_err_pid*
+replay_pid*
+crash-reports/
+
+# Forge 安装器临时文件
+forge-*-installer.jar
+installer.jar
+
+# ---------- 系统与编辑器 ----------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.idea/
+*.swp
+*.tmp
+docs/
